@@ -66,12 +66,6 @@
   </div>
   <div class="result-area" id="result-area"></div>
 </div>
-  <div id="admin-stats"></div>
-  <div class="admin-btns">
-    <button class="admin-btn primary" onclick="downloadCSV()">CSVダウンロード</button>
-    <button class="admin-btn danger" onclick="clearLogs()">リセット</button>
-  </div>
-</div>
 
 <script>
 const questions = [
@@ -148,11 +142,15 @@ function addLog(a, resultKey) {
 function renderQuestion() {
   const q = questions[current];
   selectedIndex = null;
-  document.getElementById("step-indicator").innerHTML = questions.map((_, i) => `<div class="step-dot${i < current ? " done" : i === current ? " active" : ""}"></div>`).join("");
+  document.getElementById("step-indicator").innerHTML = questions.map((_, i) =>
+    `<div class="step-dot${i < current ? " done" : i === current ? " active" : ""}"></div>`).join("");
   document.getElementById("question-area").innerHTML = `
     <div class="question-label">${q.label}</div>
     <div class="question-text">${q.text}</div>
-    <div class="options-grid">${q.options.map((o, i) => `<button class="option-btn" onclick="selectOption(${i})" id="opt-${i}"><span class="option-icon">${o.icon}</span><span>${o.text}</span></button>`).join("")}</div>`;
+    <div class="options-grid">${q.options.map((o, i) =>
+      `<button class="option-btn" onclick="selectOption(${i})" id="opt-${i}">
+        <span class="option-icon">${o.icon}</span><span>${o.text}</span>
+      </button>`).join("")}</div>`;
   const prev = answers[q.id];
   if (prev !== undefined) { selectedIndex = prev; document.getElementById(`opt-${prev}`)?.classList.add("selected"); setNextEnabled(true); }
   else { setNextEnabled(false); }
@@ -161,17 +159,20 @@ function renderQuestion() {
 }
 
 function setNextEnabled(v) { document.getElementById("btn-next").classList.toggle("enabled", v); }
+
 function selectOption(i) {
   document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById(`opt-${i}`).classList.add("selected");
   selectedIndex = i; setNextEnabled(true);
 }
+
 function goNext() {
   if (selectedIndex === null) return;
   answers[questions[current].id] = selectedIndex;
   if (current < questions.length - 1) { current++; renderQuestion(); }
   else { showLoading(); }
 }
+
 function goBack() { if (current > 0) { current--; renderQuestion(); } }
 
 function showLoading() {
@@ -193,14 +194,33 @@ function showResult(r) {
   const area = document.getElementById("result-area");
   area.style.display = "block";
   area.innerHTML = `
-    <div class="result-header"><div class="result-type">あなたの体質タイプ</div><div class="result-title">${r.type}</div></div>
-    <div class="result-section"><div class="result-section-text" style="font-size:16px;line-height:1.8">${r.message}</div></div>
-    <div class="result-section" style="margin-top:1.25rem"><div class="result-section-label">体質分析</div><div class="result-section-text">${r.analysis}</div></div>
-    <div class="result-section" style="margin-top:1.25rem"><div class="result-section-label">おすすめのコース</div>${r.recommend.map(rec=>`<div class="recommend-card"><div class="recommend-name">${rec.name}</div><div class="recommend-desc">${rec.desc}</div></div>`).join("")}</div>
-    <div class="result-section" style="margin-top:1.25rem"><div class="result-section-label">おすすめ来店頻度</div><div class="result-section-text">${r.frequency}</div></div>
-    <div class="result-section" style="margin-top:1.25rem"><div class="result-section-label">日常生活のアドバイス</div><div class="result-section-text">${r.lifestyle}</div></div>
+    <div class="result-header">
+      <div class="result-type">あなたの体質タイプ</div>
+      <div class="result-title">${r.type}</div>
+    </div>
+    <div class="result-section">
+      <div class="result-section-text" style="font-size:16px;line-height:1.8">${r.message}</div>
+    </div>
+    <div class="result-section" style="margin-top:1.25rem">
+      <div class="result-section-label">体質分析</div>
+      <div class="result-section-text">${r.analysis}</div>
+    </div>
+    <div class="result-section" style="margin-top:1.25rem">
+      <div class="result-section-label">おすすめのコース</div>
+      ${r.recommend.map(rec => `<div class="recommend-card"><div class="recommend-name">${rec.name}</div><div class="recommend-desc">${rec.desc}</div></div>`).join("")}
+    </div>
+    <div class="result-section" style="margin-top:1.25rem">
+      <div class="result-section-label">おすすめ来店頻度</div>
+      <div class="result-section-text">${r.frequency}</div>
+    </div>
+    <div class="result-section" style="margin-top:1.25rem">
+      <div class="result-section-label">日常生活のアドバイス</div>
+      <div class="result-section-text">${r.lifestyle}</div>
+    </div>
     <a class="cta-btn" href="https://dstylegroup.stores.jp/reserve/Herbelle/1346787" target="_blank">初回体験を予約する →</a>
-    <div style="text-align:center;margin-top:1rem"><button class="retry-btn" onclick="restart()">もう一度診断する</button></div>`;
+    <div style="text-align:center;margin-top:1rem">
+      <button class="retry-btn" onclick="restart()">もう一度診断する</button>
+    </div>`;
 }
 
 function restart() {
@@ -209,10 +229,6 @@ function restart() {
   document.getElementById("quiz-area").style.display="block";
   renderQuestion();
 }
-
-
-
-
 
 renderQuestion();
 </script>
